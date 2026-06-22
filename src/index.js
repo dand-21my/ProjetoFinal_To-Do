@@ -157,3 +157,4 @@ async function main() {
 
 console.log("ToDo App: Sistema inicializado com sucesso!");
 main();
+setInterval(() => {}, 1000);
