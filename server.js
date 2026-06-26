@@ -22,7 +22,7 @@ app.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════════╗
   ║    📋 To-Do App Server Iniciado      ║
-  ║    🌐 http://localhost:${PORT}           ║
+  ║    🌐 http://localhost:${PORT}  
   ║    ✅ Servidor rodando com sucesso!  ║
   ╚══════════════════════════════════════╝
   `);
