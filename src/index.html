@@ -1,58 +1,463 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ToDo App</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="page-shell">
-      <header class="hero">
-        <div class="hero__badge">ToDo App</div>
-        <h1>Organize suas tarefas de forma simples</h1>
-        <p>Adicione, visualize e gerencie suas tarefas diárias com uma interface limpa e fluida.</p>
-      </header>
-
-      <main class="panel">
-        <section class="todo-form">
-          <h2>Nova tarefa</h2>
-          <label>
-            Título
-            <input type="text" placeholder="Comprar pão" />
-          </label>
-          <label>
-            Descrição
-            <textarea placeholder="Detalhes da tarefa"></textarea>
-          </label>
-          <button type="button">Adicionar tarefa</button>
-        </section>
-
-        <section class="todo-list">
-          <div class="todo-list__header">
-            <h2>Minhas tarefas</h2>
-            <span class="status-pill">3 tarefas</span>
-          </div>
-
-          <ul>
-            <li class="todo-card todo-card--done">
-              <strong>Comprar leite</strong>
-              <p>Leite integral e iogurte.</p>
-              <span class="todo-meta">Concluída</span>
-            </li>
-            <li class="todo-card">
-              <strong>Preparar apresentação</strong>
-              <p>Slides e roteiro para a reunião de segunda.</p>
-              <span class="todo-meta">Pendente</span>
-            </li>
-            <li class="todo-card">
-              <strong>Estudar Node.js</strong>
-              <p>Revisar testes automáticos e CI.</p>
-              <span class="todo-meta">Pendente</span>
-            </li>
-          </ul>
-        </section>
-      </main>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App To-Do - Gerenciador de Tarefas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status {
+            color: #666;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #999;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+        
+        input {
+            flex: 1;
+            padding: 0.875rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 8px rgba(102, 126, 234, 0.2);
+        }
+        
+        button {
+            padding: 0.875rem 2rem;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s, transform 0.1s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .filter-btn:hover {
+            border-color: #667eea;
+        }
+        
+        .todo-list {
+            list-style: none;
+        }
+        
+        .todo-item {
+            padding: 1.25rem;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            margin-bottom: 0.75rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .todo-item:hover {
+            background: #f0f0f0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .todo-item.completed {
+            opacity: 0.6;
+            border-left-color: #4caf50;
+        }
+        
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+        
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .todo-content {
+            flex: 1;
+        }
+        
+        .todo-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+        
+        .todo-date {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        .todo-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-delete {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state-subtext {
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .status {
+                gap: 1rem;
+            }
+            
+            .input-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Minhas Tarefas</h1>
+            <div class="status">
+                <div class="stat">
+                    <div class="stat-number" id="totalTasks">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">Concluídas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="pendingTasks">0</div>
+                    <div class="stat-label">Pendentes</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="todoInput" placeholder="Adicione uma nova tarefa..." onkeypress="if(event.key === 'Enter') addTodo()">
+            <button onclick="addTodo()">➕ Adicionar</button>
+        </div>
+        
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterTasks('all')">Todas</button>
+            <button class="filter-btn" onclick="filterTasks('pending')">Pendentes</button>
+            <button class="filter-btn" onclick="filterTasks('completed')">Concluídas</button>
+        </div>
+        
+        <ul class="todo-list" id="todoList"></ul>
+        
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">✨</div>
+            <div class="empty-state-text">Nenhuma tarefa para exibir</div>
+            <div class="empty-state-subtext">Adicione uma nova tarefa para começar!</div>
+        </div>
     </div>
-  </body>
+    
+    <script>
+        console.log("ToDo App: Sistema inicializado com sucesso!");
+        
+        // Dados simulados (em produção, viria do servidor)
+        let todos = [
+            {
+                id: 1781547304480,
+                title: "Fazer exercícios de JS",
+                description: "",
+                completed: false,
+                createdAt: "2026-06-15T18:15:04.480Z",
+                updatedAt: "2026-06-15T18:15:04.480Z"
+            },
+            {
+                id: 1781547304482,
+                title: "Tarefa teste 2",
+                description: "",
+                completed: false,
+                createdAt: "2026-06-15T18:15:04.482Z",
+                updatedAt: "2026-06-15T18:15:04.482Z"
+            },
+            {
+                id: 1781897453477,
+                title: "Fazer exercícios de JS",
+                description: "",
+                completed: false,
+                createdAt: "2026-06-19T19:30:53.477Z",
+                updatedAt: "2026-06-19T19:30:53.479Z"
+            },
+            {
+                id: 1781897453483,
+                title: "Tarefa teste 1",
+                description: "",
+                completed: false,
+                createdAt: "2026-06-19T19:30:53.483Z",
+                updatedAt: "2026-06-19T19:30:53.483Z"
+            }
+        ];
+        
+        let currentFilter = 'all';
+        
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const title = input.value.trim();
+            
+            if (!title) {
+                alert('Por favor, digite uma tarefa!');
+                return;
+            }
+            
+            const newTodo = {
+                id: Date.now(),
+                title: title,
+                description: "",
+                completed: false,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            todos.push(newTodo);
+            input.value = '';
+            renderTodos();
+        }
+        
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                todo.updatedAt = new Date().toISOString();
+                renderTodos();
+            }
+        }
+        
+        function deleteTodo(id) {
+            if (confirm('Tem certeza que deseja deletar esta tarefa?')) {
+                todos = todos.filter(t => t.id !== id);
+                renderTodos();
+            }
+        }
+        
+        function filterTasks(filter) {
+            currentFilter = filter;
+            
+            // Atualizar botões de filtro
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderTodos();
+        }
+        
+        function getFilteredTodos() {
+            switch(currentFilter) {
+                case 'pending':
+                    return todos.filter(t => !t.completed);
+                case 'completed':
+                    return todos.filter(t => t.completed);
+                default:
+                    return todos;
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+        
+        function updateStats() {
+            const total = todos.length;
+            const completed = todos.filter(t => t.completed).length;
+            const pending = total - completed;
+            
+            document.getElementById('totalTasks').textContent = total;
+            document.getElementById('completedTasks').textContent = completed;
+            document.getElementById('pendingTasks').textContent = pending;
+        }
+        
+        function renderTodos() {
+            const todoList = document.getElementById('todoList');
+            const emptyState = document.getElementById('emptyState');
+            const filteredTodos = getFilteredTodos();
+            
+            updateStats();
+            
+            if (filteredTodos.length === 0) {
+                todoList.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            emptyState.style.display = 'none';
+            
+            todoList.innerHTML = filteredTodos.map(todo => `
+                <li class="todo-item ${todo.completed ? 'completed' : ''}">
+                    <input 
+                        type="checkbox" 
+                        class="checkbox" 
+                        ${todo.completed ? 'checked' : ''} 
+                        onchange="toggleTodo(${todo.id})"
+                    >
+                    <div class="todo-content">
+                        <div class="todo-title">${escapeHtml(todo.title)}</div>
+                        <div class="todo-date">📅 ${formatDate(todo.createdAt)}</div>
+                    </div>
+                    <div class="todo-actions">
+                        <button class="btn-small btn-delete" onclick="deleteTodo(${todo.id})">🗑️ Deletar</button>
+                    </div>
+                </li>
+            `).join('');
+        }
+        
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+        
+        // Inicializar ao carregar a página
+        document.addEventListener('DOMContentLoaded', renderTodos);
+    </script>
+</body>
 </html>
