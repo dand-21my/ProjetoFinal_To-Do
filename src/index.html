@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ToDo App</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero__badge">ToDo App</div>
+        <h1>Organize suas tarefas de forma simples</h1>
+        <p>Adicione, visualize e gerencie suas tarefas diárias com uma interface limpa e fluida.</p>
+      </header>
+
+      <main class="panel">
+        <section class="todo-form">
+          <h2>Nova tarefa</h2>
+          <label>
+            Título
+            <input type="text" placeholder="Comprar pão" />
+          </label>
+          <label>
+            Descrição
+            <textarea placeholder="Detalhes da tarefa"></textarea>
+          </label>
+          <button type="button">Adicionar tarefa</button>
+        </section>
+
+        <section class="todo-list">
+          <div class="todo-list__header">
+            <h2>Minhas tarefas</h2>
+            <span class="status-pill">3 tarefas</span>
+          </div>
+
+          <ul>
+            <li class="todo-card todo-card--done">
+              <strong>Comprar leite</strong>
+              <p>Leite integral e iogurte.</p>
+              <span class="todo-meta">Concluída</span>
+            </li>
+            <li class="todo-card">
+              <strong>Preparar apresentação</strong>
+              <p>Slides e roteiro para a reunião de segunda.</p>
+              <span class="todo-meta">Pendente</span>
+            </li>
+            <li class="todo-card">
+              <strong>Estudar Node.js</strong>
+              <p>Revisar testes automáticos e CI.</p>
+              <span class="todo-meta">Pendente</span>
+            </li>
+          </ul>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
